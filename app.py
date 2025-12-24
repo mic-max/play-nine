@@ -20,9 +20,15 @@ if __name__ == '__main__':
         flipped = [False] * NUM_PLAYERS * CARDS_EACH
 
         for i in range(NUM_PLAYERS):
-            to_flip = [int(x) for x in input(f'P{i}: Flip two cards [0, {CARDS_EACH - 1}]: ').split(' ')]
-            for j in to_flip:
-                flipped[(i * CARDS_EACH) + j] = True
+            # would the result of the first card flipped have any impact on the second card you flip? maybe...?
+            valid_flips = list(range(CARDS_EACH))
+
+            for j in range(2):
+                to_flip = int(input(f'P{i}: Flip {j}th card: '))
+                if to_flip not in valid_flips:
+                    raise Exception("invalid input") 
+                valid_flips.remove(to_flip)
+                flipped[(i * CARDS_EACH) + to_flip] = True
 
         random.shuffle(cards)
         index = NUM_PLAYERS * CARDS_EACH
@@ -31,7 +37,11 @@ if __name__ == '__main__':
         while(extra_turns != 0 and index < len(cards)):
             my_card = player_turn * CARDS_EACH
             print_board()
+            # empty input to draw from deck. easier to hit on keyboard than -1.
+            valid_inputs = [str(x) for x in range(CARDS_EACH)] + ['']
             pile_or_deck = input(f'P{player_turn}: Swap {cards[index]} with [0, {CARDS_EACH - 1}]: ')
+            if pile_or_deck not in valid_inputs:
+                raise Exception('invalid input')
 
             if pile_or_deck:
                 swap_index = my_card + int(pile_or_deck)
